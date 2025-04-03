@@ -1,0 +1,32 @@
+name: Sync metrics to profile
+
+on:
+  workflow_run:
+    workflows: ["Metrics"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v3
+
+      - name: Download metrics.svg
+        run: |
+          mkdir -p sync
+          cp metrics.svg sync/metrics.svg
+
+      - name: Push to profile repo (LerronF)
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.LERRONF_TOKEN }}
+        with:
+          source-directory: "sync"
+          destination-github-username: "LerronF"
+          destination-repository-name: "LerronF"
+          target-branch: "main"
+          commit-message: "sync: atualiza metrics.svg automático 🔄"
