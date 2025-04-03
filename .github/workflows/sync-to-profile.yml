@@ -20,13 +20,22 @@ jobs:
           mkdir -p sync
           cp metrics.svg sync/metrics.svg
 
-      - name: Push to profile repo (LerronF)
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.LERRONF_TOKEN }}
+      - name: Checkout profile repo (LerronF)
+        uses: actions/checkout@v3
         with:
-          source-directory: "sync"
-          destination-github-username: "LerronF"
-          destination-repository-name: "LerronF"
-          target-branch: "main"
-          commit-message: "sync: atualiza metrics.svg automático 🔄"
+          repository: LerronF/LerronF
+          token: ${{ secrets.LERRONF_TOKEN }}
+          path: profile-repo
+
+      - name: Copy file to profile repo
+        run: |
+          cp sync/metrics.svg profile-repo/metrics.svg
+
+      - name: Commit and push to profile repo
+        run: |
+          cd profile-repo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add metrics.svg
+          git commit -m "sync: atualiza metrics.svg automático 🔄" || echo "Nada novo para commitar"
+          git push
