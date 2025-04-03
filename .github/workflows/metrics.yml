@@ -1,0 +1,23 @@
+name: Metrics
+
+on:
+  schedule: [{cron: "0 * * * *"}] # roda automaticamente a cada hora
+  workflow_dispatch: # permite rodar manualmente
+
+jobs:
+  github-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lowlighter/metrics@latest
+        with:
+          filename: metrics.svg
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: LerronF
+          template: classic
+          base: header, activity, community, repositories, metadata
+          config_timezone: America/Sao_Paulo
+          plugin_lines: yes
+          plugin_followup: yes
+          plugin_stars: yes
+          plugin_languages: yes
+          plugin_traffic: yes
